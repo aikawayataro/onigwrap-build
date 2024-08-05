@@ -1,0 +1,92 @@
+name: Build
+
+on: [push, workflow_dispatch]
+env:
+  ONIGURUMA_REF: v6.9.9
+  TEXTMATESHARP_REF: v1.0.60
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - name: Linux x86_64
+            os: ubuntu-20.04
+            host: x86_64-linux-gnu
+            libname: libonigwrap.so
+            script: generic
+          - name: Linux aarch64
+            os: ubuntu-20.04
+            host: aarch64-linux-gnu
+            libname: libonigwrap.so
+            script: generic
+          - name: Windows x64
+            os: windows-2022
+            host: x86_64-w64-mingw32
+            msystem: MINGW64
+            install: mingw-w64-x86_64-autotools mingw-w64-x86_64-toolchain
+            libname: onigwrap-x64.dll
+            script: generic
+          - name: Windows x86
+            os: windows-2022
+            host: i686-w64-mingw32
+            msystem: MINGW32
+            install: mingw-w64-i686-autotools mingw-w64-i686-toolchain
+            libname: onigwrap-x86.dll
+            script: generic
+          - name: Windows ARM64
+            os: windows-2022
+            host: aarch64-w64-mingw32
+            msystem: CLANG64
+            install: mingw-w64-clang-x86_64-autotools mingw-w64-cross-clang-toolchain mingw-w64-clang-x86_64-toolchain
+            libname: onigwrap-ARM64.dll
+            script: mingw-w64-cross-clang
+          - name: OSX
+            os: macos-13
+            host: osx-universal
+            libname: onigwrap.dylib
+            script: osx
+    name: Build ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: ${{ matrix.msystem != '' && 'msys2 {0}' || 'bash' }}
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Checkout oniguruma
+        uses: actions/checkout@v4
+        with:
+          repository: kkos/oniguruma
+          ref: ${{ env.ONIGURUMA_REF }}
+          path: oniguruma
+      - name: Checkout TextMateSharp
+        uses: actions/checkout@v4
+        with:
+          repository: danipen/TextMateSharp
+          ref: ${{ env.TEXTMATESHARP_REF }}
+          path: TextMateSharp
+      - name: Install cross-compiling dependencies
+        if: ${{ matrix.host == 'aarch64-linux-gnu' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install gcc-aarch64-linux-gnu
+      - name: Install autotools
+        if: ${{ matrix.host == 'osx-universal' }}
+        run: brew install automake
+      - name: Setup MSYS2
+        if: ${{ matrix.msystem != '' }}
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          install: ${{ matrix.install }}
+      - name: Build
+        env:
+          _HOST: ${{ matrix.host }}
+          _LIBNAME: ${{ matrix.libname }}
+        run: ./build.${{ matrix.script }}.sh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.host }}.${{ matrix.libname }}
+          path: ${{ matrix.libname }}
