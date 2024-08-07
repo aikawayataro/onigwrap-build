@@ -2,7 +2,9 @@
 
 set -e
 
-mkdir buildprefix
+export CC=$_HOST-gcc
+
+mkdir -p buildprefix
 
 pushd oniguruma
 
@@ -14,4 +16,4 @@ make install
 popd
 
 rm -f TextMateSharp/onigwrap/src/oniguruma.h
-$_HOST-gcc -shared -fPIC TextMateSharp/onigwrap/src/onigwrap.c -O2 -s -I ./buildprefix/include -L ./buildprefix/lib -lonig -o "$_LIBNAME"
+$CC -shared -fPIC TextMateSharp/onigwrap/src/onigwrap.c -O2 -s -I./buildprefix/include -L./buildprefix/lib -lonig -o "$_LIBNAME"
