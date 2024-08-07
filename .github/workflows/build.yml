@@ -25,21 +25,21 @@ jobs:
             host: x86_64-w64-mingw32
             msystem: MINGW64
             install: mingw-w64-x86_64-autotools mingw-w64-x86_64-toolchain
-            libname: onigwrap-x64.dll
+            libname: onigwrap.dll
             script: generic
           - name: Windows x86
             os: windows-2022
             host: i686-w64-mingw32
             msystem: MINGW32
             install: mingw-w64-i686-autotools mingw-w64-i686-toolchain
-            libname: onigwrap-x86.dll
+            libname: onigwrap.dll
             script: generic
           - name: Windows ARM64
             os: windows-2022
             host: aarch64-w64-mingw32
             msystem: CLANG64
             install: mingw-w64-clang-x86_64-autotools mingw-w64-cross-clang-toolchain mingw-w64-clang-x86_64-toolchain
-            libname: onigwrap-ARM64.dll
+            libname: onigwrap.dll
             script: mingw-w64-cross-clang
           - name: OSX
             os: macos-13
