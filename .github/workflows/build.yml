@@ -44,7 +44,7 @@ jobs:
           - name: OSX
             os: macos-13
             host: osx-universal
-            libname: onigwrap.dylib
+            libname: libonigwrap.dylib
             script: osx
           - name: Wasm emsdk-2.0.23
             os: ubuntu-20.04
