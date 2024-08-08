@@ -165,14 +165,14 @@ jobs:
           path: artifacts
       - name: Organize runtimes
         run: |
-          install -D artifacts/x86_64-linux-gnu.libonigwrap.so/libonigwrap.so -t runtimes/linux-x64
-          install -D artifacts/aarch64-linux-gnu.libonigwrap.so/libonigwrap.so -t runtimes/linux-arm64
-          install -D artifacts/x86_64-linux-musl.libonigwrap.so/libonigwrap.so -t runtimes/linux-musl-x64
-          install -D artifacts/aarch64-linux-musl.libonigwrap.so/libonigwrap.so -t runtimes/linux-musl-arm64
-          install -D artifacts/osx-universal.libonigwrap.dylib/libonigwrap.dylib -t runtimes/osx
-          install -D artifacts/aarch64-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-arm64
-          install -D artifacts/x86_64-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-x64
-          install -D artifacts/i686-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-x86
+          install -D artifacts/x86_64-linux-gnu.libonigwrap.so/libonigwrap.so -t runtimes/linux-x64/native
+          install -D artifacts/aarch64-linux-gnu.libonigwrap.so/libonigwrap.so -t runtimes/linux-arm64/native
+          install -D artifacts/x86_64-linux-musl.libonigwrap.so/libonigwrap.so -t runtimes/linux-musl-x64/native
+          install -D artifacts/aarch64-linux-musl.libonigwrap.so/libonigwrap.so -t runtimes/linux-musl-arm64/native
+          install -D artifacts/osx-universal.libonigwrap.dylib/libonigwrap.dylib -t runtimes/osx/native
+          install -D artifacts/aarch64-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-arm64/native
+          install -D artifacts/x86_64-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-x64/native
+          install -D artifacts/i686-w64-mingw32.libonigwrap.dll/libonigwrap.dll -t runtimes/win-x86/native
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
