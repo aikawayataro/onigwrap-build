@@ -20,6 +20,16 @@ jobs:
             host: aarch64-linux-gnu
             libname: libonigwrap.so
             script: generic
+          - name: Linux x86_64 musl
+            os: ubuntu-22.04
+            host: x86_64-linux-musl
+            libname: libonigwrap.so
+            script: generic
+          - name: Linux aarch64 musl
+            os: ubuntu-22.04
+            host: aarch64-linux-musl
+            libname: libonigwrap.so
+            script: generic
           - name: Windows x64
             os: windows-2022
             host: x86_64-w64-mingw32
@@ -95,12 +105,28 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install libtool-bin
+      - name: Configure arm64 packages
+        if: ${{ startsWith(matrix.host, 'aarch64-linux-') }}
+        run: |
+          sudo dpkg --add-architecture arm64
+          source /etc/os-release
+          echo "deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ $VERSION_CODENAME main restricted universe
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ $VERSION_CODENAME-updates main restricted
+          deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ $VERSION_CODENAME-backports main restricted" \
+          | sudo tee /etc/apt/sources.list.d/arm64.list
+          sudo sed -i -e 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list
+          sudo sed -i -e 's/^deb mirror/deb [arch=amd64] mirror/g' /etc/apt/sources.list
       - name: Install cross-compiling dependencies
-        if: ${{ matrix.host == 'aarch64-linux-gnu' }}
+        if: ${{ startsWith(matrix.host, 'aarch64-linux-') }}
         run: |
           sudo apt-get update
           sudo apt-get install gcc-aarch64-linux-gnu
-      - name: Install autotools
+      - name: Install musl-tools
+        if: ${{ endsWith(matrix.host, '-musl') }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install musl-tools:${{ startsWith(matrix.host, 'aarch64-') && 'arm64' || 'amd64' }}
+      - name: Install automake
         if: ${{ matrix.host == 'osx-universal' }}
         run: brew install automake
       - name: Setup MSYS2
